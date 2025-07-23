@@ -85,7 +85,8 @@ EOF
     kubeadm join 192.168.20.15:6443 --token rt95m4.c23b2rhokoqev1x2 \
         --discovery-token-ca-cert-hash sha256:4ea2533cbb84a91165d40ce40ec1f1f0ab5546f826f7c47602eadd3b243a7c3a
 
-4. instalar calico 
+4. instalar calico
+     Antes de isntalar calico debes de tener como minimo un worker par aue calico pueda isntalarse
        kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
 
 
@@ -153,7 +154,10 @@ EOF
         name: l2
         namespace: metallb-system
 
-7. Instalar el ingress
+   aplicar
+   
+
+8. Instalar el ingress
      kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
    
       comandos para revisar
