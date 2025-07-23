@@ -155,7 +155,28 @@ EOF
         namespace: metallb-system
 
    aplicar
-   
+  ------------------------------------------------------
+
+   PASOS PARA INSTALAR HELM (Versión estable)
+🔹 1. Agrega el repositorio oficial de Helm
+bash
+Copiar
+Editar
+curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+sudo apt-get install apt-transport-https --yes
+echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+🔹 2. Actualiza e instala Helm
+bash
+Copiar
+Editar
+sudo apt update
+sudo apt install helm -y
+🔹 3. Verifica la instalación
+bash
+Copiar
+Editar
+helm version
+*****************************************************************************************
 
 8. Instalar el ingress
      kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
