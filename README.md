@@ -57,6 +57,24 @@
           spec:
          loadBalancerIP: 192.168.10.81
 
+
+                1. Instalar ingress-nginx con Helm
+            Si aún no lo tienes instalado con Helm, este es el comando recomendado para un clúster en Proxmox con LoadBalancer (que hace salida a Internet):
+            
+            bash
+            Copiar
+            Editar
+            helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+            helm repo update
+            
+            helm install ingress-nginx ingress-nginx/ingress-nginx \
+              --namespace ingress-nginx \
+              --create-namespace \
+              --set controller.service.type=LoadBalancer \
+              --set controller.ingressClassResource.name=nginx \
+              --set controller.ingressClassResource.controllerValue="k8s.io/ingress-nginx"
+            ✅ Asegúrate de que el LoadBalancer (MetalLB, HAProxy, etc.) esté funcionando correctamente.
+
    
  6.Configurar HTTPS con Let's Encrypt (cert-manager)
    1.	Instala cert-manager:
