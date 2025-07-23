@@ -1,5 +1,61 @@
 # k8
 
+0 #0preparacion de isntalacion para el nodo master como para el Worker
+
+     sudo hostnamectl set-hostname worker-node-1
+ Paso 2: Desactivar Swap y habilitar módulos de Kubernetes
+    sudo swapoff -a
+    sudo sed -i '/ swap / s/^/#/' /etc/fstab
+
+    sudo modprobe overlay
+    sudo modprobe br_netfilter
+
+      sudo tee /etc/sysctl.d/k8s.conf <<EOF
+      net.bridge.bridge-nf-call-iptables = 1
+      net.ipv4.ip_forward = 1
+      net.bridge.bridge-nf-call-arptables = 1
+      EOF
+
+      sudo sysctl --system
+
+      #anular de froma permante en el arranque
+      nano /etc/fstab
+
+
+      # cambiar repositorio apra isntalar 
+      deb http://archive.ubuntu.com/ubuntu/ jammy main universe restricted multiverse
+      deb http://archive.ubuntu.com/ubuntu/ jammy-updates main universe restricted multiverse
+      deb http://archive.ubuntu.com/ubuntu/ jammy-backports main universe restricted multiverse
+      deb http://archive.ubuntu.com/ubuntu/ jammy-security main universe restricted multiverse
+      
+      sudo apt-get update
+      
+      sudo apt update && sudo apt install -y curl apt-transport-https ca-certificates software-properties-common
+
+      sudo apt install -y containerd
+
+      sudo mkdir -p /etc/containerd
+      containerd config default | sudo tee /etc/containerd/config.toml 
+
+      Edita el archivo y cambia SystemdCgroup = false a true en containerd/config.toml:
+
+      sudo nano /etc/containerd/config.toml
+
+      sudo systemctl restart containerd
+      sudo systemctl enable containerd
+
+    #instalamos kuberntees
+    curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo tee /etc/apt/keyrings/kubernetes-apt-keyring.asc
+      echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+      sudo apt update
+
+ 
+
+
+
+ 
+
+
 
 
 #instalacion de Nodo master de Kubernetes
