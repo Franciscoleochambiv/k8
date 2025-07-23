@@ -53,21 +53,17 @@
 
 
 
- 
-
-
-
-
 #instalacion de Nodo master de Kubernetes
 1.  una vez de  haber instalado  el basico para los nodos
    sudo hostnamectl set-hostname master-node
 
     sudo modprobe br_netfilter
-    sudo tee /etc/sysctl.d/k8s.conf <<EOF
-    net.bridge.bridge-nf-call-iptables = 1
-    net.ipv4.ip_forward = 1
-    net.bridge.bridge-nf-call-arptables = 1
-    EOF
+sudo tee /etc/sysctl.d/k8s.conf <<EOF
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-arptables = 1
+EOF
+
 
     sudo sysctl --system
  2. 
