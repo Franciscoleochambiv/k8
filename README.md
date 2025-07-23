@@ -88,7 +88,52 @@ EOF
 4. instalar calico 
        kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
 
-5. Intalar metalb  para crear un load balancer  para que salga por ahi la conexion hacie l exterior de los pods   
+
+
+                  Y obtuviste:
+               
+               perl
+               Copiar
+               Editar
+               WARN/ERROR: connect: no such file or directory "/var/run/dockershim.sock"
+               ...
+               kube-apiserver ... Running
+               🔍 ¿Qué significa esto?
+               El kube-apiserver está corriendo correctamente, lo cual es buena señal. ✅
+               
+               Pero crictl está intentando conectarse a un socket de Docker (dockershim.sock) que ya no existe, porque:
+               
+               dockershim fue removido desde Kubernetes 1.24.
+               
+               Tu sistema probablemente usa containerd, no Docker.
+               
+               ✅ ¿Cómo solucionarlo?
+               1. 🛠 Establecer el socket correcto para crictl
+               Edita (o crea) el archivo de configuración para crictl:
+               
+               bash
+               Copiar
+               Editar
+               sudo nano /etc/crictl.yaml
+               Agrega el siguiente contenido (asumiendo que usas containerd):
+               
+               yaml
+               Copiar
+               Editar
+               runtime-endpoint: unix:///run/containerd/containerd.sock
+               Guarda y cierra con CTRL+O, ENTER, CTRL+X.
+               
+               Luego prueba:
+               
+               bash
+               Copiar
+               Editar
+               sudo crictl ps
+               Ya no deberías ver errores.
+               
+               
+
+6. Intalar metalb  para crear un load balancer  para que salga por ahi la conexion hacie l exterior de los pods   
 
       kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/main/config/manifests/metallb-native.yaml
 
@@ -108,7 +153,7 @@ EOF
         name: l2
         namespace: metallb-system
 
-6. Instalar el ingress
+7. Instalar el ingress
      kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
    
       comandos para revisar
