@@ -1,9 +1,10 @@
 # k8
 
 
+
 #instalacion de Nodo master de Kubernetes
 1.  una vez de  haber instalado  el basico para los nodos
-       sudo hostnamectl set-hostname master-node
+   sudo hostnamectl set-hostname master-node
 
     sudo modprobe br_netfilter
     sudo tee /etc/sysctl.d/k8s.conf <<EOF
@@ -38,10 +39,58 @@
         namespace: metallb-system
         spec:
         addresses:
-            - 192.168.20.18
+            - 192.168.20.18/32
         ---
         apiVersion: metallb.io/v1beta1
         kind: L2Advertisement
         metadata:
-        name: salida-internet-advert
+        name: l2
         namespace: metallb-system
+
+5. Instalar el ingress
+     kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
+   
+      comandos para revisar
+         kubectl get svc -n ingress-nginx
+      Si no lo hace automáticamente como LoadBalancer, modifica el servicio manualmente
+        # patch-ingress.yaml
+          spec:
+         loadBalancerIP: 192.168.10.81
+
+   
+ 6.Configurar HTTPS con Let's Encrypt (cert-manager)
+   1.	Instala cert-manager:
+       kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml
+     	
+   3.	Crea un ClusterIssuer para Let's Encrypt:****
+      
+      # cluster-issuer.yaml
+       apiVersion: cert-manager.io/v1
+       kind: ClusterIssuer
+       metadata:
+         name: letsencrypt-prod
+       spec:
+         acme:
+           email: tu-email@dominio.com
+           server: https://acme-v02.api.letsencrypt.org/directory
+           privateKeySecretRef:
+             name: letsencrypt-prod
+           solvers:
+           - http01:
+               ingress:
+                 class: nginx
+
+      #aplicar kubectl apply -f cluster-issuer.yaml
+
+7.para proxmox debemos d einstalr helm para los certificados
+
+  helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --set installCRDs=true \
+  --set "extraArgs={--dns01-recursive-nameservers-only,--dns01-recursive-nameservers=8.8.8.8:53}"
+
+     
+
+   
+   
