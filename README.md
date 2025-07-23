@@ -49,6 +49,13 @@
       echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.asc] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
       sudo apt update
 
+
+sudo apt install -y kubelet kubeadm kubectl
+sudo apt-mark hold kubelet kubeadm kubectl
+
+
+sudo systemctl enable --now kubelet
+
  
 
 
@@ -73,13 +80,15 @@ EOF
         sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
         sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-        kubeadm join 192.168.20.11:6443 --token xgeh1h.3rd9utsmxtestmd6 \
-        --discovery-token-ca-cert-hash sha256:514ac9cb307f943568b46ef2b3fb2e97a76b6907adc0f0451ec056f22e283e67
+        
+    
+    kubeadm join 192.168.20.15:6443 --token rt95m4.c23b2rhokoqev1x2 \
+        --discovery-token-ca-cert-hash sha256:4ea2533cbb84a91165d40ce40ec1f1f0ab5546f826f7c47602eadd3b243a7c3a
 
-3. instalar calico 
+4. instalar calico 
        kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.0/manifests/calico.yaml
 
-4. Intalar metalb  para crear un load balancer  para que salga por ahi la conexion hacie l exterior de los pods   
+5. Intalar metalb  para crear un load balancer  para que salga por ahi la conexion hacie l exterior de los pods   
 
       kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/main/config/manifests/metallb-native.yaml
 
@@ -99,7 +108,7 @@ EOF
         name: l2
         namespace: metallb-system
 
-5. Instalar el ingress
+6. Instalar el ingress
      kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
    
       comandos para revisar
