@@ -278,6 +278,59 @@ NAME           CPU(cores)   MEMORY(bytes)
 master-node    250m        500Mi
 
 
+9 Instalanmdo Longhorn 
+
+
+helm repo add longhorn https://charts.longhorn.io
+helm repo update
+kubectl create namespace longhorn-system
+
+helm install longhorn longhorn/longhorn \
+  --namespace longhorn-system
+
+kubectl -n longhorn-system get pods
+
+✅ 4. Crear un PVC con acceso ReadWriteMany (RWX)
+Aquí tienes un ejemplo YAML para crear un PVC RWX:
+
+yaml
+Copiar
+Editar
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: shared-data
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 5Gi
+🧪 5. Probarlo con múltiples pods
+Puedes montar ese PVC en múltiples pods como:
+
+yaml
+Copiar
+Editar
+apiVersion: v1
+kind: Pod
+metadata:
+  name: writer-pod
+spec:
+  containers:
+  - name: writer
+    image: busybox
+    command: ["sh", "-c", "echo hello > /mnt/data/hello.txt; sleep 3600"]
+    volumeMounts:
+    - mountPath: /mnt/data
+      name: shared-vol
+  volumes:
+  - name: shared-vol
+    persistentVolumeClaim:
+      claimName: shared-data
+Luego otro pod puede leer el mismo archivo usando el mismo PVC.
+
      
 
    
