@@ -239,6 +239,45 @@ helm version
   --set installCRDs=true \
   --set "extraArgs={--dns01-recursive-nameservers-only,--dns01-recursive-nameservers=8.8.8.8:53}"
 
+
+8 instalar metrics server 
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+
+kubectl get pods -n kube-system
+
+: Habilitar opciones en metrics-server
+Algunas veces metrics-server no funciona por problemas de certificado SSL. Para solucionarlo, edita la configuración:
+1️⃣ Abre el archivo de despliegue de metrics-server:
+sh
+CopiarEditar
+kubectl edit deployment metrics-server -n kube-system
+2️⃣ Busca la sección command: dentro del contenedor metrics-server y agrégale estos flags:
+yaml
+CopiarEditar
+spec:
+  containers:
+  - name: metrics-server
+    args:
+    - --kubelet-insecure-tls
+    - --kubelet-preferred-address-types=InternalIP
+3️⃣ Guarda los cambios y reinicia los pods:
+sh
+CopiarEditar
+kubectl delete pod -n kube-system -l k8s-app=metrics-server
+Esto hará que los pods se reinicien con la nueva configuración.
+________________________________________
+🛠️ Paso 3: Probar metrics-server
+Después de la instalación, espera unos segundos y ejecuta:
+sh
+CopiarEditar
+kubectl top nodes
+Si funciona correctamente, verás algo como:
+scss
+CopiarEditar
+NAME           CPU(cores)   MEMORY(bytes)
+master-node    250m        500Mi
+
+
      
 
    
