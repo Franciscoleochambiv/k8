@@ -331,6 +331,74 @@ spec:
       claimName: shared-data
 Luego otro pod puede leer el mismo archivo usando el mismo PVC.
 
+
+
+10. isntaldo  maridb galera alta disponibilidad
+11. Modificación final del values.yaml con NodePort
+yaml
+Copiar
+Editar
+architecture: replication
+
+auth:
+  rootPassword: "sopa*806"
+  replicationUser: repl
+  replicationPassword: "sopa*807"
+  database: ""
+  username: ""
+  password: ""
+
+galera:
+  enabled: true
+  clusterBootstrap: true
+  galeraClusterName: "mariadb-galera"
+
+primary:
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 8Gi
+  podAffinityPreset: soft
+  nodeAffinityPreset:
+    type: ""
+  tolerations: []
+  updateStrategy:
+    type: RollingUpdate
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+secondary:
+  replicaCount: 2
+  persistence:
+    enabled: true
+    storageClass: longhorn
+    size: 8Gi
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+service:
+  type: NodePort
+  nodePorts:
+    mysql: 32006     # <-- Puedes cambiar este puerto si ya está ocupado
+  port: 3306         # Puerto interno del contenedor
+✅ Comando para instalar con este values.yaml
+bash
+Copiar
+Editar
+helm install mariadb-galera bitnami/mariadb-galera \
+  --namespace mariadb --create-namespace \
+  -f mariadb-galera-values.yaml
+
      
 
    
