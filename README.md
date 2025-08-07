@@ -215,20 +215,22 @@ helm version
    3.	Crea un ClusterIssuer para Let's Encrypt:****
       
       # cluster-issuer.yaml
-       apiVersion: cert-manager.io/v1
-       kind: ClusterIssuer
-       metadata:
-         name: letsencrypt-prod
-       spec:
-         acme:
-           email: tu-email@dominio.com
-           server: https://acme-v02.api.letsencrypt.org/directory
-           privateKeySecretRef:
-             name: letsencrypt-prod
-           solvers:
-           - http01:
-               ingress:
-                 class: nginx
+ apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    email: grupo90pr@gmail.com
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+    - http01:
+        ingress:
+          class: nginx
+      
+      
 
       #aplicar kubectl apply -f cluster-issuer.yaml
 
