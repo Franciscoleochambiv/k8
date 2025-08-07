@@ -251,12 +251,12 @@ kubectl get pods -n kube-system
 : Habilitar opciones en metrics-server
 Algunas veces metrics-server no funciona por problemas de certificado SSL. Para solucionarlo, edita la configuración:
 1️⃣ Abre el archivo de despliegue de metrics-server:
-sh
-CopiarEditar
+
+
 kubectl edit deployment metrics-server -n kube-system
 2️⃣ Busca la sección command: dentro del contenedor metrics-server y agrégale estos flags:
-yaml
-CopiarEditar
+
+
 spec:
   containers:
   - name: metrics-server
@@ -264,21 +264,69 @@ spec:
     - --kubelet-insecure-tls
     - --kubelet-preferred-address-types=InternalIP
 3️⃣ Guarda los cambios y reinicia los pods:
-sh
-CopiarEditar
-kubectl delete pod -n kube-system -l k8s-app=metrics-server
+
+
+            kubectl delete pod -n kube-system -l k8s-app=metrics-server
 Esto hará que los pods se reinicien con la nueva configuración.
 ________________________________________
 🛠️ Paso 3: Probar metrics-server
 Después de la instalación, espera unos segundos y ejecuta:
-sh
-CopiarEditar
-kubectl top nodes
+
+      kubectl top nodes
 Si funciona correctamente, verás algo como:
 scss
-CopiarEditar
+
 NAME           CPU(cores)   MEMORY(bytes)
 master-node    250m        500Mi
+
+
+8.1 instalar el dashboard
+
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+
+2. Crear un usuario admin para acceder
+Crea un archivo llamado admin-user.yaml con este contenido:
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+
+  
+Y aplícalo:
+
+
+kubectl apply -f admin-user.yaml
+
+
+3. Obtener el token de acceso
+Obtén el token para acceder al Dashboard:
+
+
+kubectl -n kubernetes-dashboard create token admin-user
+
+
+Guarda este token, es el que usarás para iniciar sesión.
+
+
+
+
+*************************************************************************************************************************************************************
 
 
 9 Instalanmdo Longhorn 
