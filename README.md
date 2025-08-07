@@ -139,43 +139,43 @@ EOF
       kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/main/config/manifests/metallb-native.yaml
 
       #creamos el archivo para el loadbalancer 
-        apiVersion: metallb.io/v1beta1
-        kind: IPAddressPool
-        metadata:
-        name: salida-internet-pool
-        namespace: metallb-system
-        spec:
-        addresses:
-            - 192.168.20.18/32
-        ---
-        apiVersion: metallb.io/v1beta1
-        kind: L2Advertisement
-        metadata:
-        name: l2
-        namespace: metallb-system
+     
+
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: salida-internet-pool
+  namespace: metallb-system
+spec:
+  addresses:
+    - 192.168.10.81/32
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: l2
+  namespace: metallb-system
+
+
 
    aplicar
   ------------------------------------------------------
 
    PASOS PARA INSTALAR HELM (Versión estable)
 🔹 1. Agrega el repositorio oficial de Helm
-bash
-Copiar
-Editar
-curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+
+
+
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
 sudo apt-get install apt-transport-https --yes
-echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-🔹 2. Actualiza e instala Helm
-bash
-Copiar
-Editar
-sudo apt update
-sudo apt install helm -y
-🔹 3. Verifica la instalación
-bash
-Copiar
-Editar
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+
 helm version
+
+
+
 *****************************************************************************************
 
 8. Instalar el ingress
@@ -183,6 +183,7 @@ helm version
    
       comandos para revisar
          kubectl get svc -n ingress-nginx
+
       Si no lo hace automáticamente como LoadBalancer, modifica el servicio manualmente
         # patch-ingress.yaml
           spec:
