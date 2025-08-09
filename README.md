@@ -243,6 +243,83 @@ spec:
   --set "extraArgs={--dns01-recursive-nameservers-only,--dns01-recursive-nameservers=8.8.8.8:53}"
 
 
+importante :
+kubectl -n kube-system edit configmap coredns
+    hosts {
+        192.168.20.18 balanceo.facturameya.online
+        fallthrough
+    }
+
+
+
+
+example:
+Crea un archivo coredns-wildcard.yaml y aplícalo con kubectl apply -f … para evitar el texto con \n.
+
+yaml
+Copiar
+Editar
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns
+  namespace: kube-system
+data:
+  Corefile: |
+    .:53 {
+        errors
+        health
+        ready
+
+        # Split-DNS: TODO cambia 192.168.20.18 por tu IP interna del Ingress
+        # El hosts de CoreDNS acepta wildcard en la 1ª etiqueta (*.dominio)
+        hosts {
+            192.168.20.18 *.facturameya.online
+            fallthrough
+        }
+
+        kubernetes cluster.local in-addr.arpa ip6.arpa {
+            pods insecure
+            fallthrough
+        }
+        prometheus :9153
+        forward . /etc/resolv.conf
+        cache 30
+        loop
+        reload
+        loadbalance
+    }
+Aplica y reinicia CoreDNS:
+
+bash
+Copiar
+Editar
+kubectl apply -f coredns-wildcard.yaml
+
+kubectl -n kube-system rollout restart deploy coredns
+
+2️⃣ Comprobar resolución de DNS desde dentro del clúster
+Abre un pod temporal para hacer pruebas:
+
+bash
+Copiar
+Editar
+kubectl run -it --rm --image=busybox dns-test --restart=Never -- sh
+Dentro del pod:
+
+sh
+Copiar
+Editar
+nslookup balanceo.facturameya.online
+nslookup otro.facturameya.online
+Ambos deberían devolver 192.168.20.18 (o la IP interna que configuraste).
+
+********************************************************************************************************************************************
+
+
+
+
+
 8 instalar metrics server 
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
