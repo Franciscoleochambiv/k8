@@ -603,6 +603,10 @@ Editar
 kubectl -n mariadb exec -it "$POD" -- /opt/bitnami/mariadb/bin/mariadb -uroot -p"$ROOTPW" -e "S
 
 
+kubectl -n mariadb exec -it mariadb-galera-0 -- /opt/bitnami/mariadb/bin/mariadb -uroot -p"tu_clave" -e "SHOW DATABASES;"
+
+
+
 
 
    
