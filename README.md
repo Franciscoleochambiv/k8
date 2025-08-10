@@ -527,7 +527,83 @@ helm install mariadb-galera bitnami/mariadb-galera \
   --namespace mariadb --create-namespace \
   -f mariadb-galera-values.yaml
 
-     
+  # values-galera.yaml  (para bitnami/mariadb-galera)
+replicaCount: 3
+
+auth:
+  rootPassword: "sopa*806"        # cambia en producción
+  username: "appuser"             # opcional
+  password: "app_pass"            # opcional
+  database: "appdb"               # opcional
+
+galera:
+  name: "mariadb-galera"
+  # el chart se auto-bootstrapea; no necesitas primary/secondary
+  mariabackup:
+    user: "backup"
+    password: "backup_pass"
+
+persistence:
+  enabled: true
+  storageClass: "longhorn"        # PVCs RWO (uno por pod)
+  accessModes: ["ReadWriteOnce"]
+  size: 8Gi
+
+podAntiAffinityPreset: hard       # distribuye réplicas en nodos distintos
+resources:
+  requests: { cpu: "250m", memory: "512Mi" }
+  limits:   { cpu: "500m", memory: "1Gi" }
+
+service:
+  type: ClusterIP
+  ports:
+    mysql: 3306
+
+
+  ******************copair tus datos alos pods de galera
+  1) Variables útiles
+bash
+Copiar
+Editar
+# Pod de Galera
+POD=$(kubectl -n mariadb get pods -l app.kubernetes.io/name=mariadb-galera -o jsonpath='{.items[0].metadata.name}')
+
+# Password root desde el Secret del chart
+ROOTPW=$(kubectl -n mariadb get secret mariadb-galera -o jsonpath='{.data.mariadb-root-password}' | base64 -d)
+2) Copia tus .sql al pod
+bash
+Copiar
+Editar
+kubectl -n mariadb exec -it "$POD" -- mkdir -p /tmp/sql
+kubectl -n mariadb cp /home/lala/diag/sql/. "$POD":/tmp/sql
+kubectl -n mariadb exec -it "$POD" -- ls -lh /tmp/sql
+3) Crear las BDs e importar usando el binario correcto
+bash
+Copiar
+Editar
+kubectl -n mariadb exec -it "$POD" -- bash -lc '
+set -e
+MYSQL="/opt/bitnami/mariadb/bin/mariadb"     # usa este binario
+PW="${MARIADB_ROOT_PASSWORD:-'"$ROOTPW"'}"
+
+$MYSQL -uroot -p"$PW" -e "CREATE DATABASE IF NOT EXISTS almacen;"
+$MYSQL -uroot -p"$PW" -e "CREATE DATABASE IF NOT EXISTS concurso_danza;"
+$MYSQL -uroot -p"$PW" -e "CREATE DATABASE IF NOT EXISTS ecomerse;"
+$MYSQL -uroot -p"$PW" -e "CREATE DATABASE IF NOT EXISTS planillas;"
+
+$MYSQL -uroot -p"$PW" almacen        < /tmp/sql/almacen.sql
+$MYSQL -uroot -p"$PW" concurso_danza < /tmp/sql/concurso_danza.sql
+$MYSQL -uroot -p"$PW" ecomerse       < /tmp/sql/ecomerse.sql
+$MYSQL -uroot -p"$PW" planillas      < /tmp/sql/planillas.sql
+'
+4) Verificar
+bash
+Copiar
+Editar
+kubectl -n mariadb exec -it "$POD" -- /opt/bitnami/mariadb/bin/mariadb -uroot -p"$ROOTPW" -e "S
+
+
+
 
    
    
