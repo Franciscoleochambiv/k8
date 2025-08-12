@@ -296,6 +296,9 @@ Copiar
 Editar
 kubectl apply -f coredns-wildcard.yaml
 
+
+
+kubectl -n kube-system edit configmap coredns
 kubectl -n kube-system rollout restart deploy coredns
 
 2️⃣ Comprobar resolución de DNS desde dentro del clúster
