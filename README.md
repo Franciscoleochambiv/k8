@@ -10,11 +10,12 @@
     sudo modprobe overlay
     sudo modprobe br_netfilter
 
-      sudo tee /etc/sysctl.d/k8s.conf <<EOF
-      net.bridge.bridge-nf-call-iptables = 1
-      net.ipv4.ip_forward = 1
-      net.bridge.bridge-nf-call-arptables = 1
-      EOF
+      sudo modprobe br_netfilter
+sudo tee /etc/sysctl.d/k8s.conf <<EOF
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-arptables = 1
+EOF
 
       sudo sysctl --system
 
@@ -56,8 +57,15 @@ sudo apt-mark hold kubelet kubeadm kubectl
 
 sudo systemctl enable --now kubelet
 
- 
+********en el master para generar el join
+sudo kubeadm token create --print-join-command
 
+
+********en los workers para preprarar el sdd
+
+sudo mkfs.xfs -f /dev/sdb
+sudo mkdir -p /var/lib/longhorn/disks/100gb
+sudo mount /dev/sdb /var/lib/longhorn/disks/100gb
 
 
 #instalacion de Nodo master de Kubernetes
