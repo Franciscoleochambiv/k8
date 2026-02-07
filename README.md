@@ -80,7 +80,22 @@ sudo apt-get install -y open-iscsi nfs-common
 sudo systemctl enable --now iscsid
 sudo systemctl enable --now open-iscsi
 
+***montar el disco en longhorn
 
+Paso final: decirle a Longhorn que use ese disco
+
+Montarlo no basta si no lo registras como “Disk” en Longhorn:
+
+En UI de Longhorn:
+Node → worker-node-35 → Edit Disks → Add Disk
+
+Path: /var/lib/longhorn/disks/100gb
+
+Scheduling: Enabled
+
+(Opcional) Storage Reserved para dejar margen (por ejemplo 10–20Gi)
+
+*********************************************************************************************************************************
 
 #instalacion de Nodo master de Kubernetes
 1.  una vez de  haber instalado  el basico para los nodos
