@@ -83,6 +83,7 @@ sudo systemctl enable --now open-iscsi
 
 ---------------------------------------------------
 ***editat fstab para que cague cuando incie 
+vim /etc/fstab
 /dev/sdb /var/lib/longhorn/disks/100gb xfs defaults 0 0
 -------------------------------------------------
 
