@@ -80,6 +80,12 @@ sudo apt-get install -y open-iscsi nfs-common
 sudo systemctl enable --now iscsid
 sudo systemctl enable --now open-iscsi
 
+
+---------------------------------------------------
+***editat fstab para que cague cuando incie 
+/dev/sdb /var/lib/longhorn/disks/100gb xfs defaults 0 0
+-------------------------------------------------
+
 ***montar el disco en longhorn
 
 Paso final: decirle a Longhorn que use ese disco
