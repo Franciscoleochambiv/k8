@@ -63,9 +63,23 @@ sudo kubeadm token create --print-join-command
 
 ********en los workers para preprarar el sdd
 
+sudo apt-get update
+sudo apt-get install -y xfsprogs
+
+
+
 sudo mkfs.xfs -f /dev/sdb
 sudo mkdir -p /var/lib/longhorn/disks/100gb
 sudo mount /dev/sdb /var/lib/longhorn/disks/100gb
+
+
+
+****
+sudo apt-get update
+sudo apt-get install -y open-iscsi nfs-common
+sudo systemctl enable --now iscsid
+sudo systemctl enable --now open-iscsi
+
 
 
 #instalacion de Nodo master de Kubernetes
